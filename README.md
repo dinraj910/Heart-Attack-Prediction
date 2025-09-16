@@ -216,28 +216,28 @@ Training Data: Indian population healthcare dataset
 
 ---
 
-### 📈 **Risk Meter Visualization**
+### 📈 **Result**
 *Real-time risk assessment with Chart.js*
 
 ![Risk Meter](screenshots/Screenshot7.png)
 
 ---
 
-### 🎨 **Design System Components**
+### 🎨 **Result**
 *Consistent glassmorphism design language*
 
 ![Design System](screenshots/Screenshot8.png)
 
 ---
 
-### 🌐 **Cross-Browser Compatibility**
+### 🌐 **Result**
 *Consistent experience across all modern browsers*
 
 ![Browser Support](Screenshots/Screenshot9.png)
 
 ---
 
-### ⚡ **Performance Optimization**
+### ⚡ **Result**
 *Fast loading with optimized assets*
 
 ![Performance Metrics](screenshots/Screenshot10.png)
