@@ -12,6 +12,11 @@
 
 *Professional Medical AI Platform with Futuristic UI/UX Design*
 
+### 🌟 **LIVE DEMO**
+**[🔗 Try the Heart Disease Prediction AI](https://web-production-3385.up.railway.app/)**
+
+*Click the link above to experience the live application!*
+
 </div>
 
 ---
@@ -428,6 +433,27 @@ Risk Assessment Results
 - 🏥 **Domain Knowledge** - Healthcare technology understanding
 - 📊 **Data Science Skills** - Statistical analysis and visualization
 - 🚀 **Production-Ready Code** - Scalable and maintainable architecture
+
+---
+
+### 🎉 **Successfully Deployed to Production**
+
+**🌍 Live Application:** https://web-production-3385.up.railway.app/
+
+**📋 Deployment Details:**
+- ✅ **Hosting Platform**: Railway.app
+- ✅ **Runtime**: Python 3.10 with optimized ML dependencies
+- ✅ **Database**: Integrated ML model pipeline (.pkl)
+- ✅ **SSL Certificate**: Automatic HTTPS enabled
+- ✅ **Auto-scaling**: Handles traffic spikes efficiently
+- ✅ **Monitoring**: Health checks and error tracking active
+
+**🚀 Production Features:**
+- 🔍 Real-time heart disease risk assessment
+- 📊 Interactive data visualization with Chart.js
+- 🖨️ Printable medical reports for healthcare providers
+- 📱 Fully responsive design for all devices
+- ⚡ Sub-second prediction response times
 
 ---
 
