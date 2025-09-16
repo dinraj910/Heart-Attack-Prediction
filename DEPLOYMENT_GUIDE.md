@@ -1,36 +1,8 @@
 # 🚀 Free Hosting Deployment Guide
 
-## 🏆 Recommended Option: Render (100% Free)
+## 🏆 RECOMMENDED: Railway (Best for ML Apps)
 
-### Step-by-Step Render Deployment:
-
-1. **📋 Prerequisites**
-   - GitHub account with your project pushed
-   - All files committed and pushed to main branch
-
-2. **🌐 Deploy on Render**
-   ```
-   1. Go to https://render.com
-   2. Sign up with GitHub account
-   3. Click "New" → "Web Service"
-   4. Connect your GitHub repository: Heart-Attack-Prediction
-   5. Configure settings:
-      - Name: heart-disease-prediction
-      - Environment: Python 3
-      - Build Command: pip install -r requirements.txt
-      - Start Command: gunicorn app:app
-      - Auto-Deploy: Yes
-   6. Click "Create Web Service"
-   ```
-
-3. **⚡ Your website will be live at:**
-   ```
-   https://heart-disease-prediction-[random].onrender.com
-   ```
-
----
-
-## 🚂 Alternative: Railway ($5/month free credit)
+Render has compilation issues with scikit-learn. **Railway is now the best option!**
 
 ### Step-by-Step Railway Deployment:
 
@@ -38,16 +10,55 @@
    ```
    1. Go to https://railway.app
    2. Sign up with GitHub account
-   3. Click "Deploy from GitHub repo"
+   3. Click "New Project" → "Deploy from GitHub repo"
    4. Select your Heart-Attack-Prediction repository
-   5. Railway auto-detects Python/Flask
+   5. Railway auto-detects Python and uses our railway.toml config
    6. Click "Deploy Now"
+   7. Wait 2-3 minutes for build to complete
    ```
 
 2. **⚡ Your website will be live at:**
    ```
    https://[your-app-name].up.railway.app
    ```
+
+3. **💰 Cost**: $5 free credit monthly (more than enough for your app)
+
+---
+
+## � Alternative: PythonAnywhere (Reliable Backup)
+
+### Step-by-Step PythonAnywhere Deployment:
+
+1. **📋 Setup**
+   ```
+   1. Go to https://www.pythonanywhere.com
+   2. Create free account
+   3. Go to "Tasks" → "Upload files"
+   4. Upload your project ZIP file
+   5. Extract in home directory
+   6. Go to "Web" tab → "Add new web app"
+   7. Choose Flask, Python 3.10
+   8. Point to your app.py file
+   9. Install packages in Bash console:
+      pip3.10 install --user -r requirements.txt
+   ```
+
+---
+
+## 🔍 Why Railway Works Better
+
+**Railway Advantages:**
+- ✅ **Pre-compiled packages** - No Cython compilation
+- ✅ **Better caching** - Faster builds
+- ✅ **Docker support** - More reliable deployments  
+- ✅ **Automatic HTTPS** - Professional URLs
+- ✅ **GitHub integration** - Auto-deploy on push
+
+**Render Issues:**
+- ❌ **Compilation required** - scikit-learn build fails
+- ❌ **Python 3.13 default** - Compatibility issues
+- ❌ **No Docker option** - Limited flexibility
 
 ---
 
