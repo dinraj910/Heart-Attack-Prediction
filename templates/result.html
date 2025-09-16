@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Risk Assessment Results | HeartAI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='print.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Static Background -->
+    <div class="static-bg"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark glass-nav fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <div class="logo-container me-3">
+                    <i class="fas fa-heart-pulse fa-2x text-gradient"></i>
+                </div>
+                <div>
+                    <span class="fw-bold fs-4 text-gradient">HeartAI</span>
+                    <div class="small text-light opacity-75">Advanced Medical Intelligence</div>
+                </div>
+            </a>
+            <div class="d-flex align-items-center">
+                <span class="badge bg-success me-3 px-3 py-2">
+                    <i class="fas fa-shield-alt me-1"></i>HIPAA Compliant
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5" style="margin-top: 100px;">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="glass-card-static p-5">
+                    <div class="text-center mb-5">
+                        <div class="hero-badge mb-3">
+                            <i class="fas fa-chart-line me-2"></i>AI Analysis Complete
+                        </div>
+                        <h2 class="text-gradient fw-bold mb-3" style="font-family: 'Space Grotesk', sans-serif;">
+                            <i class="fa-solid fa-heart-pulse me-2"></i>Heart Disease Risk Assessment
+                        </h2>
+                        <p class="text-light opacity-75">Comprehensive AI-powered health risk analysis based on your data</p>
+                    </div>
+                    
+                    <!-- Risk Score Section -->
+                    <div class="row mb-5">
+                        <div class="col-md-6 text-center">
+                            <div class="glass-card-static p-4 mb-4 h-100">
+                                <div style="width: 200px; height: 200px; margin: 0 auto;">
+                                    <canvas id="riskMeter" width="200" height="200"></canvas>
+                                </div>
+                                <h4 class="mt-3 fw-bold text-light">
+                                    Risk Score: <span class="text-white">{{ risk_score }}%</span>
+                                </h4>
+                                <h5 class="{{ 'text-success' if risk_category=='Low' else ('text-warning' if risk_category=='Medium' else 'text-danger') }}">
+                                    {{ risk_category }} Risk Level
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="glass-card-static h-100">
+                                <div class="p-4">
+                                    <h5 class="text-gradient mb-3">
+                                        <i class="fa-solid fa-info-circle me-2"></i>Risk Interpretation
+                                    </h5>
+                                    {% if risk_category == 'Low' %}
+                                    <div class="alert alert-success border-0" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                                        <strong>Excellent!</strong> Your risk assessment indicates a low probability of heart disease. Keep maintaining your healthy lifestyle.
+                                    </div>
+                                    {% elif risk_category == 'Medium' %}
+                                    <div class="alert alert-warning border-0" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                                        <strong>Moderate Risk:</strong> Some factors may increase your heart disease risk. Consider lifestyle modifications and regular monitoring.
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-danger border-0" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                                        <strong>High Risk:</strong> Multiple factors indicate elevated heart disease risk. Immediate medical consultation is strongly recommended.
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <h6 class="mt-3">Risk Categories:</h6>
+                                    <ul class="small">
+                                        <li><span class="text-success fw-bold fs-5">Low (0-33%):</span> Minimal risk</li>
+                                        <li><span class="text-warning fw-bold fs-5">Medium (34-66%):</span> Moderate risk</li>
+                                        <li><span class="text-danger fw-bold fs-5">High (67-100%):</span> Elevated risk</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comprehensive Recommendations -->
+                    <div class="row mb-5">
+                        <div class="col-12">
+                            <h5 class="mb-3"><i class="fa-solid fa-user-doctor text-primary me-2"></i>Personalized Recommendations</h5>
+                            <div class="row">
+                                {% if risk_category == 'Low' %}
+                                <div class="col-md-6">
+                                    <div class="card border-success">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0"><i class="fa-solid fa-heart me-2"></i>Maintain Your Health</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="mb-0">
+                                                <li>Continue regular physical activity (150+ min/week)</li>
+                                                <li>Maintain balanced diet with fruits & vegetables</li>
+                                                <li>Keep stress levels manageable</li>
+                                                <li>Annual health checkups recommended</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-info">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0"><i class="fa-solid fa-calendar-check me-2"></i>Preventive Measures</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="mb-0">
+                                                <li>Monitor blood pressure monthly</li>
+                                                <li>Check cholesterol levels annually</li>
+                                                <li>Avoid smoking and limit alcohol</li>
+                                                <li>Maintain healthy weight (BMI 18.5-24.9)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% elif risk_category == 'Medium' %}
+                                <div class="col-md-6">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0"><i class="fa-solid fa-exclamation-triangle me-2"></i>Immediate Actions</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="mb-0">
+                                                <li>Consult healthcare provider within 2-4 weeks</li>
+                                                <li>Start structured exercise program</li>
+                                                <li>Implement heart-healthy diet plan</li>
+                                                <li>Monitor blood pressure weekly</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-primary">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0"><i class="fa-solid fa-stethoscope me-2"></i>Medical Follow-up</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="mb-0">
+                                                <li>Request comprehensive cardiac screening</li>
+                                                <li>Review current medications</li>
+                                                <li>Consider stress management therapy</li>
+                                                <li>Schedule follow-up in 3-6 months</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="col-md-6">
+                                    <div class="card border-danger">
+                                        <div class="card-header bg-danger text-white">
+                                            <h6 class="mb-0"><i class="fa-solid fa-exclamation-circle me-2"></i>Urgent Actions Required</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="mb-0">
+                                                <li><strong>Schedule immediate medical consultation</strong></li>
+                                                <li>Request emergency cardiac evaluation</li>
+                                                <li>Begin cardiac rehabilitation if recommended</li>
+                                                <li>Consider medication therapy</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border-dark">
+                                        <div class="card-header bg-dark text-white">
+                                            <h6 class="mb-0"><i class="fa-solid fa-shield-halved me-2"></i>Critical Lifestyle Changes</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <ul class="mb-0">
+                                                <li>Immediate smoking cessation if applicable</li>
+                                                <li>Strict dietary modifications</li>
+                                                <li>Supervised exercise program only</li>
+                                                <li>Daily blood pressure monitoring</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comprehensive Health Analysis -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5 class="mb-3"><i class="fa-solid fa-heart-pulse text-primary me-2"></i>Comprehensive Health Analysis & Prevention Guide</h5>
+                        </div>
+                    </div>
+
+                    <!-- Risk Factor Analysis -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0"><i class="fa-solid fa-magnifying-glass me-2"></i>Your Risk Profile Analysis</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Age Factor:</strong>
+                                        {% if risk_category == 'High' %}
+                                        <span class="text-danger">Requires immediate attention - age-related cardiovascular changes</span>
+                                        {% elif risk_category == 'Medium' %}
+                                        <span class="text-warning">Moderate concern - preventive measures recommended</span>
+                                        {% else %}
+                                        <span class="text-success">Generally favorable - maintain healthy habits</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <strong>Lifestyle Assessment:</strong>
+                                        <ul class="mt-2 mb-0">
+                                            {% if risk_category == 'High' %}
+                                            <li>Multiple lifestyle factors may be contributing to increased risk</li>
+                                            <li>Immediate lifestyle modifications are crucial</li>
+                                            <li>Consider professional lifestyle coaching</li>
+                                            {% elif risk_category == 'Medium' %}
+                                            <li>Some lifestyle factors need improvement</li>
+                                            <li>Gradual, sustainable changes recommended</li>
+                                            <li>Focus on 1-2 key areas first</li>
+                                            {% else %}
+                                            <li>Current lifestyle supports heart health</li>
+                                            <li>Continue maintaining good habits</li>
+                                            <li>Minor optimizations possible</li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0"><i class="fa-solid fa-shield-heart me-2"></i>Prevention Strategy</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Primary Prevention Focus:</strong>
+                                        <ul class="mt-2">
+                                            <li><strong>Diet:</strong> Mediterranean-style eating pattern</li>
+                                            <li><strong>Exercise:</strong> 150+ minutes moderate activity weekly</li>
+                                            <li><strong>Stress:</strong> Daily stress management techniques</li>
+                                            <li><strong>Sleep:</strong> 7-9 hours quality sleep nightly</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="alert alert-success mb-0">
+                                        <small><i class="fa-solid fa-lightbulb me-1"></i>
+                                        <strong>Remember:</strong> Small, consistent changes often yield better long-term results than dramatic lifestyle overhauls.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Recommendations -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0"><i class="fa-solid fa-list-check me-2"></i>Personalized Action Plan</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="text-center mb-3">
+                                                <i class="fa-solid fa-utensils fa-2x text-warning mb-2"></i>
+                                                <h6>Nutrition Plan</h6>
+                                            </div>
+                                            <ul class="list-unstyled">
+                                                <li>✓ Increase fiber intake (25-35g daily)</li>
+                                                <li>✓ Omega-3 fatty acids (fish 2x/week)</li>
+                                                <li>✓ Limit sodium to <2,300mg daily</li>
+                                                <li>✓ Choose whole grains over refined</li>
+                                                <li>✓ Include 5+ servings fruits/vegetables</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <div class="text-center mb-3">
+                                                <i class="fa-solid fa-dumbbell fa-2x text-info mb-2"></i>
+                                                <h6>Exercise Program</h6>
+                                            </div>
+                                            <ul class="list-unstyled">
+                                                <li>✓ 30 min brisk walking, 5 days/week</li>
+                                                <li>✓ Strength training 2-3 times/week</li>
+                                                <li>✓ Flexibility exercises daily</li>
+                                                <li>✓ Start gradually, increase slowly</li>
+                                                <li>✓ Track progress with apps/devices</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <div class="text-center mb-3">
+                                                <i class="fa-solid fa-brain fa-2x text-success mb-2"></i>
+                                                <h6>Mental Wellness</h6>
+                                            </div>
+                                            <ul class="list-unstyled">
+                                                <li>✓ Practice meditation (10-15 min daily)</li>
+                                                <li>✓ Maintain social connections</li>
+                                                <li>✓ Ensure adequate sleep hygiene</li>
+                                                <li>✓ Consider counseling if stressed</li>
+                                                <li>✓ Engage in enjoyable hobbies</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline and Monitoring -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0"><i class="fa-solid fa-calendar-days me-2"></i>Implementation Timeline</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="timeline">
+                                        <div class="mb-3">
+                                            <strong>Week 1-2:</strong> Start with basic dietary changes and light exercise
+                                        </div>
+                                        <div class="mb-3">
+                                            <strong>Week 3-4:</strong> Add stress management techniques and sleep optimization
+                                        </div>
+                                        <div class="mb-3">
+                                            <strong>Month 2:</strong> Increase exercise intensity and consistency
+                                        </div>
+                                        <div class="mb-0">
+                                            <strong>Month 3+:</strong> Regular health monitoring and habit refinement
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h6 class="mb-0"><i class="fa-solid fa-stethoscope me-2"></i>Monitoring Guidelines</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Regular Check-ups:</strong>
+                                        <ul class="mt-2">
+                                            {% if risk_category == 'High' %}
+                                            <li>Blood pressure: Weekly monitoring</li>
+                                            <li>Cholesterol: Every 3 months</li>
+                                            <li>Weight: Daily tracking</li>
+                                            <li>Doctor visits: Every 2-3 months</li>
+                                            {% elif risk_category == 'Medium' %}
+                                            <li>Blood pressure: Monthly monitoring</li>
+                                            <li>Cholesterol: Every 6 months</li>
+                                            <li>Weight: Weekly tracking</li>
+                                            <li>Doctor visits: Every 4-6 months</li>
+                                            {% else %}
+                                            <li>Blood pressure: Every 3 months</li>
+                                            <li>Cholesterol: Annually</li>
+                                            <li>Weight: Monthly tracking</li>
+                                            <li>Doctor visits: Annual check-up</li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Warning Signs -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-danger">
+                                <h6 class="alert-heading"><i class="fa-solid fa-triangle-exclamation me-2"></i>Emergency Warning Signs - Seek Immediate Medical Attention:</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="mb-0">
+                                            <li>Chest pain or pressure lasting more than a few minutes</li>
+                                            <li>Shortness of breath with or without chest discomfort</li>
+                                            <li>Pain in arms, back, neck, jaw, or stomach</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul class="mb-0">
+                                            <li>Cold sweat, nausea, or lightheadedness</li>
+                                            <li>Sudden severe headache or confusion</li>
+                                            <li>Unusual fatigue or weakness</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <hr>
+                                <p class="mb-0"><strong>Call emergency services immediately if you experience any of these symptoms.</strong></p>
+                            </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center">
+                        <a href="{{ url_for('predict') }}" class="btn btn-primary-gradient me-3">
+                            <i class="fa-solid fa-arrow-left me-2"></i>New Assessment
+                        </a>
+                        <button onclick="window.print()" class="btn btn-outline-light">
+                            <i class="fa-solid fa-print me-2"></i>Print Results
+                        </button>
+                        <div class="mt-3">
+                            <small class="text-light opacity-75">
+                                <i class="fas fa-download me-1"></i>Save or share your comprehensive health assessment
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-footer py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-heart-pulse fa-2x text-gradient me-3"></i>
+                        <div>
+                            <div class="fw-bold text-white">HeartAI Medical Intelligence</div>
+                            <small class="text-light opacity-75">Advancing preventive healthcare through AI</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-light opacity-75">&copy; 2025 HeartAI. All rights reserved.</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- 
+    NOTE: VS Code JavaScript linting errors below are EXPECTED and NORMAL.
+    The curly brace syntax is Jinja2 templating, not JavaScript syntax errors.
+    The application works correctly despite these linting warnings.
+    -->
+    <!-- Template data for JavaScript -->
+    <script type="application/json" id="template-data">
+        {
+            "risk_score": {{ risk_score }},
+            "risk_category": "{{ risk_category }}"
+        }
+    </script>
+    
+    <script>
+        // Load template data
+        const templateData = JSON.parse(document.getElementById('template-data').textContent);
+        const riskScore = templateData.risk_score;
+        const riskCategory = templateData.risk_category;
+        const remaining = 100 - riskScore;
+        
+        let riskColor;
+        if (riskCategory === 'Low') riskColor = '#28a745';
+        else if (riskCategory === 'Medium') riskColor = '#ffc107';
+        else riskColor = '#dc3545';
+
+        const ctx = document.getElementById('riskMeter').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Risk Level', 'Remaining'],
+                datasets: [{
+                    data: [riskScore, remaining],
+                    backgroundColor: [riskColor, 'rgba(255, 255, 255, 0.1)'],
+                    borderWidth: 3,
+                    borderColor: 'rgba(255, 255, 255, 0.2)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                if (context.dataIndex === 0) {
+                                    return `Risk: ${riskScore}%`;
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
