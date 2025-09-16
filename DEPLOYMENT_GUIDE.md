@@ -93,6 +93,28 @@ heart-disease-prediction/
 ## 🔍 Troubleshooting
 
 ### Common Issues:
+
+#### 1. **Scikit-learn Compilation Error (FIXED!)**
+**Error**: `'int_t' is not a type identifier` - Python 3.13 compatibility issue
+**Solution**: We've updated to:
+- Python 3.11.5 (in runtime.txt)
+- Compatible dependency versions (in requirements.txt)
+
+#### 2. **Alternative Solutions if Build Still Fails:**
+If you still get build errors, try these files instead:
+
+**Option A: Use requirements-minimal.txt**
+```bash
+# Rename the file in your repository
+mv requirements.txt requirements-backup.txt
+mv requirements-minimal.txt requirements.txt
+# Then redeploy
+```
+
+**Option B: Use Railway instead of Render**
+Railway has better build caching and may handle dependencies better.
+
+#### 3. **Other Common Issues:**
 1. **Model not loading**: Ensure models/ directory is committed to Git
 2. **Dependencies missing**: Check requirements.txt has all packages
 3. **Port issues**: App is configured to use environment PORT variable
