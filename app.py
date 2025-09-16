@@ -1,23 +1,59 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import joblib
-import shap
 import numpy as np
 import pandas as pd
 import os
+import sys
 
 app = Flask(__name__)
 
-# Production-ready model loading with error handling
+# Add debug info for hosting platforms
+print(f"Python version: {sys.version}")
+print(f"Current working directory: {os.getcwd()}")
+print(f"Files in current directory: {os.listdir('.')}")
+
+# Production-ready model loading with extensive error handling
+model = None
 try:
-    model_path = os.path.join(os.path.dirname(__file__), 'models', 'heart_disease_pipeline.pkl')
-    if not os.path.exists(model_path):
-        # Try alternative path for different hosting environments
-        model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'models', 'heart_disease_pipeline.pkl')
-    model = joblib.load(model_path)
-    print(f"Model loaded successfully from: {model_path}")
+    # Try multiple possible paths for the model
+    possible_paths = [
+        os.path.join(os.path.dirname(__file__), 'models', 'heart_disease_pipeline.pkl'),
+        os.path.join('models', 'heart_disease_pipeline.pkl'),
+        'models/heart_disease_pipeline.pkl',
+        './models/heart_disease_pipeline.pkl'
+    ]
+    
+    for model_path in possible_paths:
+        if os.path.exists(model_path):
+            model = joblib.load(model_path)
+            print(f"✅ Model loaded successfully from: {model_path}")
+            break
+    
+    if model is None:
+        print("❌ Model file not found in any expected location")
+        print("Available files:", os.listdir('.'))
+        if os.path.exists('models'):
+            print("Files in models directory:", os.listdir('models'))
+        
 except Exception as e:
-    print(f"Error loading model: {e}")
-    model = None
+    print(f"❌ Error loading model: {e}")
+    import traceback
+    traceback.print_exc()
+
+# Health check endpoint
+@app.route('/health')
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'model_loaded': model is not None,
+        'python_version': sys.version,
+        'cwd': os.getcwd()
+    })
+
+# Simple test route
+@app.route('/test')
+def test():
+    return "✅ Flask app is running! Model loaded: " + str(model is not None)
 
 @app.route('/')
 def home():
@@ -72,35 +108,41 @@ def predict():
         input_data = [patient_data[col] for col in feature_columns]
         X = pd.DataFrame([input_data], columns=feature_columns)
         
-        # Make prediction
-        pred_prob = model.predict_proba(X)[0][1]
-        pred_class = model.predict(X)[0]
-        risk_category = 'Low' if pred_prob < 0.33 else ('Medium' if pred_prob < 0.66 else 'High')
+        # Check if model is loaded
+        if model is None:
+            return render_template('result.html',
+                                 risk_score=50,
+                                 risk_category='Unable to assess',
+                                 feature_importance=[('Error', 'Model not loaded - please contact support')])
         
-        # SHAP explanation
         try:
-            explainer = shap.Explainer(model.named_steps['clf'], model.named_steps['preprocessor'].transform(X))
-            shap_values = explainer(model.named_steps['preprocessor'].transform(X))
-            feature_importance = list(zip(feature_columns[1:], shap_values.values[0]))  # Exclude Patient_ID from display
-            feature_importance.sort(key=lambda x: abs(x[1]), reverse=True)
-        except Exception as e:
-            print(f"SHAP explanation failed: {e}")
-            # Fallback feature importance based on common heart disease risk factors
+            # Make prediction
+            pred_prob = model.predict_proba(X)[0][1]
+            pred_class = model.predict(X)[0]
+            risk_category = 'Low' if pred_prob < 0.33 else ('Medium' if pred_prob < 0.66 else 'High')
+            
+            # Create simple feature importance without SHAP
             feature_importance = [
-                ('Age', 0.15),
-                ('Cholesterol_Level', 0.12), 
-                ('Systolic_BP', 0.10),
-                ('Diabetes', 0.08),
-                ('Smoking', 0.07),
-                ('Family_History', 0.06),
-                ('Stress_Level', 0.05),
-                ('Physical_Activity', -0.04)
+                ('Age', patient_data['Age']),
+                ('Cholesterol Level', patient_data['Cholesterol_Level']),
+                ('Blood Pressure', f"{patient_data['Systolic_BP']}/{patient_data['Diastolic_BP']}"),
+                ('Family History', 'Yes' if patient_data['Family_History'] else 'No'),
+                ('Smoking', 'Yes' if patient_data['Smoking'] else 'No'),
+                ('Physical Activity', patient_data['Physical_Activity']),
+                ('Stress Level', patient_data['Stress_Level'])
             ]
-        
-        return render_template('result.html',
-                               risk_score=int(pred_prob*100),
-                               risk_category=risk_category,
-                               feature_importance=feature_importance)
+            
+            return render_template('result.html',
+                                   risk_score=int(pred_prob*100),
+                                   risk_category=risk_category,
+                                   feature_importance=feature_importance)
+            
+        except Exception as e:
+            print(f"Prediction error: {e}")
+            return render_template('result.html',
+                                 risk_score=50,
+                                 risk_category='Error',
+                                 feature_importance=[('Error', str(e))])
     
     return render_template('predict.html')
 
