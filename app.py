@@ -12,31 +12,44 @@ print(f"Python version: {sys.version}")
 print(f"Current working directory: {os.getcwd()}")
 print(f"Files in current directory: {os.listdir('.')}")
 
+# Check if models directory exists
+if os.path.exists('models'):
+    print(f"Models directory exists. Contents: {os.listdir('models')}")
+else:
+    print("❌ Models directory does not exist!")
+
 # Production-ready model loading with extensive error handling
 model = None
 try:
     # Try multiple possible paths for the model
     possible_paths = [
+        'heart_disease_pipeline.pkl',  # Root directory (for Railway)
         os.path.join(os.path.dirname(__file__), 'models', 'heart_disease_pipeline.pkl'),
         os.path.join('models', 'heart_disease_pipeline.pkl'),
         'models/heart_disease_pipeline.pkl',
         './models/heart_disease_pipeline.pkl'
     ]
     
-    for model_path in possible_paths:
+    print("🔍 Searching for model file...")
+    for i, model_path in enumerate(possible_paths):
+        print(f"  Path {i+1}: {model_path} - {'EXISTS' if os.path.exists(model_path) else 'NOT FOUND'}")
         if os.path.exists(model_path):
-            model = joblib.load(model_path)
-            print(f"✅ Model loaded successfully from: {model_path}")
-            break
+            try:
+                model = joblib.load(model_path)
+                print(f"✅ Model loaded successfully from: {model_path}")
+                print(f"✅ Model type: {type(model)}")
+                break
+            except Exception as load_error:
+                print(f"❌ Failed to load from {model_path}: {load_error}")
     
     if model is None:
         print("❌ Model file not found in any expected location")
-        print("Available files:", os.listdir('.'))
+        print("Available files in current directory:", os.listdir('.'))
         if os.path.exists('models'):
             print("Files in models directory:", os.listdir('models'))
         
 except Exception as e:
-    print(f"❌ Error loading model: {e}")
+    print(f"❌ Error during model loading: {e}")
     import traceback
     traceback.print_exc()
 
