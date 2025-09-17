@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import os
 import sys
+import json
 
 app = Flask(__name__)
 
@@ -71,6 +72,37 @@ def test():
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/debug')
+def debug():
+    """Debug route to check model loading status"""
+    debug_info = {
+        'model_loaded': model is not None,
+        'model_type': str(type(model)) if model else 'None',
+        'current_directory': os.getcwd(),
+        'files_in_directory': os.listdir('.'),
+        'python_version': sys.version
+    }
+    
+    if os.path.exists('models'):
+        debug_info['models_directory'] = os.listdir('models')
+    else:
+        debug_info['models_directory'] = 'Directory not found'
+    
+    # Check if model files exist
+    model_files = {}
+    paths_to_check = [
+        'heart_disease_pipeline.pkl',
+        'models/heart_disease_pipeline.pkl',
+        './models/heart_disease_pipeline.pkl'
+    ]
+    
+    for path in paths_to_check:
+        model_files[path] = os.path.exists(path)
+    
+    debug_info['model_file_checks'] = model_files
+    
+    return f"<pre>{json.dumps(debug_info, indent=2)}</pre>"
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
