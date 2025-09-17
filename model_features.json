@@ -1,0 +1,1 @@
+{"features": ["Age", "Diabetes", "Hypertension", "Obesity", "Smoking", "Physical_Activity", "Diet_Score", "Cholesterol_Level", "Systolic_BP", "Diastolic_BP", "Family_History", "Stress_Level"], "model_type": "simple_random_forest"}

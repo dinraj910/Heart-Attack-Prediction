@@ -21,10 +21,12 @@ else:
 
 # Production-ready model loading with extensive error handling
 model = None
+model_type = "complex"  # Global variable to track model type
 try:
     # Try multiple possible paths for the model
     possible_paths = [
         'heart_disease_pipeline.pkl',  # Root directory (for Railway)
+        'simple_heart_model.pkl',  # Simple fallback model
         os.path.join(os.path.dirname(__file__), 'models', 'heart_disease_pipeline.pkl'),
         os.path.join('models', 'heart_disease_pipeline.pkl'),
         'models/heart_disease_pipeline.pkl',
@@ -39,9 +41,18 @@ try:
                 model = joblib.load(model_path)
                 print(f"✅ Model loaded successfully from: {model_path}")
                 print(f"✅ Model type: {type(model)}")
+                
+                # Determine model type
+                if 'simple' in model_path:
+                    model_type = "simple"
+                    print("📝 Using simple model (12 features)")
+                else:
+                    model_type = "complex"
+                    print("📝 Using complex model (24 features)")
                 break
             except Exception as load_error:
                 print(f"❌ Failed to load from {model_path}: {load_error}")
+                continue
     
     if model is None:
         print("❌ Model file not found in any expected location")
@@ -233,9 +244,38 @@ def predict():
                                  feature_importance=[('Error', 'Model not loaded - please contact support')])
         
         try:
-            # Make prediction
-            pred_prob = model.predict_proba(X)[0][1]
-            pred_class = model.predict(X)[0]
+            # Handle different model types
+            global model_type
+            if model_type == "simple":
+                # Simple model expects only 12 features in specific order
+                simple_features = [
+                    patient_data['Age'],
+                    patient_data['Diabetes'], 
+                    patient_data['Hypertension'],
+                    patient_data['Obesity'],
+                    patient_data['Smoking'],
+                    patient_data['Physical_Activity'],
+                    patient_data['Diet_Score'],
+                    patient_data['Cholesterol_Level'],
+                    patient_data['Systolic_BP'],
+                    patient_data['Diastolic_BP'],
+                    patient_data['Family_History'],
+                    patient_data['Stress_Level']
+                ]
+                
+                # Convert to numpy array for simple model
+                X_simple = np.array([simple_features])
+                pred_prob = model.predict_proba(X_simple)[0][1]
+                pred_class = model.predict(X_simple)[0]
+                print(f"🔮 Simple model prediction: {pred_prob:.4f}")
+                
+            else:
+                # Complex model expects DataFrame with all features
+                X = pd.DataFrame([patient_data])
+                pred_prob = model.predict_proba(X)[0][1]
+                pred_class = model.predict(X)[0]
+                print(f"🔮 Complex model prediction: {pred_prob:.4f}")
+            
             risk_category = 'Low' if pred_prob < 0.33 else ('Medium' if pred_prob < 0.66 else 'High')
             
             # Create simple feature importance without SHAP
