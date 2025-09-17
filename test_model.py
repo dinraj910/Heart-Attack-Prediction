@@ -39,9 +39,8 @@ try:
     # Test prediction with sample data (including Patient_ID as expected by the model)
     print("\n🔮 Testing Prediction...")
     
-    # Sample input data matching the dataset structure (including Patient_ID as the model expects it)
+    # Sample input data matching the dataset structure (24 features, excluding Patient_ID and Heart_Attack_Risk)
     sample_data_dict = {
-        'Patient_ID': 1,  # The model expects this column
         'State_Name': 'Delhi',
         'Age': 45,
         'Gender': 'Male',

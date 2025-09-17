@@ -114,15 +114,14 @@ def predict():
             state_value = 'Tamil Nadu'
             
         patient_data = {
-            'Patient_ID': 1,  # Default Patient ID
             'State_Name': state_value,
             'Age': int(request.form.get('age', 45)),
-            'Gender': 1 if request.form.get('gender', 'Male') == 'Male' else 0,  # Convert to numeric
-            'Diabetes': 1 if request.form.get('diabetes') else 0,  # Convert to numeric
-            'Hypertension': 1 if request.form.get('hypertension') else 0,  # Convert to numeric
-            'Obesity': 1 if request.form.get('obesity') else 0,  # Convert to numeric
-            'Smoking': 1 if request.form.get('smoking') else 0,  # Convert to numeric
-            'Alcohol_Consumption': 1 if request.form.get('alcohol') else 0,  # Convert to numeric
+            'Gender': request.form.get('gender', 'Male'),  # Keep as string for proper encoding
+            'Diabetes': 1 if request.form.get('diabetes') else 0,
+            'Hypertension': 1 if request.form.get('hypertension') else 0,
+            'Obesity': 1 if request.form.get('obesity') else 0,
+            'Smoking': 1 if request.form.get('smoking') else 0,
+            'Alcohol_Consumption': 1 if request.form.get('alcohol') else 0,
             'Physical_Activity': int(request.form.get('physical_activity', 2)),
             'Diet_Score': int(request.form.get('diet_score', 5)),
             'Cholesterol_Level': int(request.form.get('cholesterol', 200)),
@@ -132,26 +131,17 @@ def predict():
             'Systolic_BP': int(request.form.get('systolic_bp', 120)),
             'Diastolic_BP': int(request.form.get('diastolic_bp', 80)),
             'Air_Pollution_Exposure': int(request.form.get('air_pollution', 1)),
-            'Family_History': 1 if request.form.get('family_history') else 0,  # Convert to numeric
+            'Family_History': 1 if request.form.get('family_history') else 0,
             'Stress_Level': int(request.form.get('stress_level', 5)),
-            'Healthcare_Access': 1 if request.form.get('healthcare', 'Urban') == 'Urban' else 0,  # Convert to numeric
-            'Heart_Attack_History': 1 if request.form.get('heart_attack_history') else 0,  # Convert to numeric
+            'Healthcare_Access': 1 if request.form.get('healthcare', 'Urban') == 'Urban' else 0,
+            'Heart_Attack_History': 1 if request.form.get('heart_attack_history') else 0,
             'Emergency_Response_Time': int(request.form.get('emergency_time', 200)),
             'Annual_Income': int(request.form.get('annual_income', 500000)),
-            'Health_Insurance': 1 if request.form.get('health_insurance') else 0  # Convert to numeric
+            'Health_Insurance': 1 if request.form.get('health_insurance') else 0
         }
         
-        # Create DataFrame with all features including Patient_ID (exact column names from original dataset)
-        feature_columns = ['Patient_ID', 'State_Name', 'Age', 'Gender', 'Diabetes', 'Hypertension', 'Obesity', 
-                          'Smoking', 'Alcohol_Consumption', 'Physical_Activity', 'Diet_Score',
-                          'Cholesterol_Level', 'Triglyceride_Level', 'LDL_Level', 'HDL_Level',
-                          'Systolic_BP', 'Diastolic_BP', 'Air_Pollution_Exposure', 'Family_History',
-                          'Stress_Level', 'Healthcare_Access', 'Heart_Attack_History', 
-                          'Emergency_Response_Time', 'Annual_Income', 'Health_Insurance']
-        
-        # Create input array in the correct order
-        input_data = [patient_data[col] for col in feature_columns]
-        X = pd.DataFrame([input_data], columns=feature_columns)
+        # Create DataFrame (required for the sklearn pipeline) - NO Patient_ID
+        X = pd.DataFrame([patient_data])
         
         # Check if model is loaded
         if model is None:
