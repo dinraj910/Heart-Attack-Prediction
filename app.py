@@ -73,6 +73,88 @@ def test():
 def home():
     return render_template('index.html')
 
+@app.route('/reload-model')
+def reload_model():
+    """Force reload the model - useful for debugging"""
+    global model
+    
+    print("🔄 Forcing model reload...")
+    
+    model = None
+    try:
+        possible_paths = [
+            'heart_disease_pipeline.pkl',
+            'models/heart_disease_pipeline.pkl',
+            './models/heart_disease_pipeline.pkl',
+            os.path.join('models', 'heart_disease_pipeline.pkl'),
+            os.path.join(os.path.dirname(__file__), 'models', 'heart_disease_pipeline.pkl')
+        ]
+        
+        for i, path in enumerate(possible_paths):
+            print(f"  Path {i+1}: {path} - {'EXISTS' if os.path.exists(path) else 'NOT FOUND'}")
+            if os.path.exists(path):
+                try:
+                    model = joblib.load(path)
+                    print(f"✅ Model reloaded successfully from: {path}")
+                    print(f"Model type: {type(model)}")
+                    
+                    # Test prediction
+                    sample_data = {
+                        'State_Name': 'Delhi',
+                        'Age': 45,
+                        'Gender': 'Male',
+                        'Diabetes': 1,
+                        'Hypertension': 1,
+                        'Obesity': 1,
+                        'Smoking': 1,
+                        'Alcohol_Consumption': 0,
+                        'Physical_Activity': 1,
+                        'Diet_Score': 3,
+                        'Cholesterol_Level': 280,
+                        'Triglyceride_Level': 220,
+                        'LDL_Level': 160,
+                        'HDL_Level': 35,
+                        'Systolic_BP': 160,
+                        'Diastolic_BP': 100,
+                        'Air_Pollution_Exposure': 1,
+                        'Family_History': 1,
+                        'Stress_Level': 8,
+                        'Healthcare_Access': 1,
+                        'Heart_Attack_History': 0,
+                        'Emergency_Response_Time': 250,
+                        'Annual_Income': 400000,
+                        'Health_Insurance': 0
+                    }
+                    
+                    test_df = pd.DataFrame([sample_data])
+                    pred_prob = model.predict_proba(test_df)[0][1]
+                    
+                    return f"""
+                    <h2>✅ Model Reload Successful!</h2>
+                    <p><strong>Model Path:</strong> {path}</p>
+                    <p><strong>Model Type:</strong> {type(model)}</p>
+                    <p><strong>Test Prediction:</strong> {pred_prob:.4f} ({pred_prob*100:.1f}%)</p>
+                    <p><strong>Status:</strong> Model is working correctly!</p>
+                    <a href="/predict">Test the prediction form</a>
+                    """
+                except Exception as load_error:
+                    print(f"❌ Failed to reload from {path}: {load_error}")
+        
+        if model is None:
+            return f"""
+            <h2>❌ Model Reload Failed</h2>
+            <p>No model could be loaded from any path.</p>
+            <p><strong>Available files:</strong> {os.listdir('.')}</p>
+            <p><strong>Models directory:</strong> {os.listdir('models') if os.path.exists('models') else 'Not found'}</p>
+            """
+            
+    except Exception as e:
+        return f"""
+        <h2>❌ Model Reload Error</h2>
+        <p><strong>Error:</strong> {e}</p>
+        <p><strong>Type:</strong> {type(e)}</p>
+        """
+
 @app.route('/debug')
 def debug():
     """Debug route to check model loading status"""
